@@ -9,6 +9,7 @@
     "dev:full": "concurrently \"npm run server\" \"npm run dev\"",
     "show-db": "node server/show-db.js",
     "build": "vite build",
+    "build:pages": "vite build --mode github-pages",
     "lint": "eslint .",
     "preview": "vite preview"
   },

@@ -1,6 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-import { apiRequest } from "../lib/api";
+import { appMode, dataSource } from "../lib/dataSource";
 
 const HostelHubContext = createContext(null);
 
@@ -23,7 +23,7 @@ export function HostelHubProvider({ children }) {
     setError("");
 
     try {
-      const payload = await apiRequest("/api/bootstrap");
+      const payload = await dataSource.bootstrap();
       setData(payload);
       setSelectedStudentId((current) => current ?? payload.students[0]?.id ?? null);
     } catch (fetchError) {
@@ -60,90 +60,58 @@ export function HostelHubProvider({ children }) {
   );
 
   async function createStudent(payload) {
-    await apiRequest("/api/students", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createStudent(payload);
     await refreshData();
   }
 
   async function updateStudent(id, payload) {
-    await apiRequest(`/api/students/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.updateStudent(id, payload);
     await refreshData();
   }
 
   async function deleteStudent(id) {
-    await apiRequest(`/api/students/${id}`, {
-      method: "DELETE",
-    });
+    await dataSource.deleteStudent(id);
     setSelectedStudentId((current) => (current === id ? null : current));
     await refreshData();
   }
 
   async function createComplaint(payload) {
-    await apiRequest("/api/complaints", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createComplaint(payload);
     await refreshData();
   }
 
   async function updateComplaintStatus(id, status) {
-    await apiRequest(`/api/complaints/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
+    await dataSource.updateComplaintStatus(id, status);
     await refreshData();
   }
 
   async function createLeaveApplication(payload) {
-    await apiRequest("/api/leave-applications", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createLeaveApplication(payload);
     await refreshData();
   }
 
   async function updateLeaveStatus(id, status, approverNote) {
-    await apiRequest(`/api/leave-applications/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status, approverNote }),
-    });
+    await dataSource.updateLeaveStatus(id, status, approverNote);
     await refreshData();
   }
 
   async function createNotice(payload) {
-    await apiRequest("/api/notices", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createNotice(payload);
     await refreshData();
   }
 
   async function createMenuItem(payload) {
-    await apiRequest("/api/mess-menu", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createMenuItem(payload);
     await refreshData();
   }
 
   async function createLostFoundItem(payload) {
-    await apiRequest("/api/lost-found", {
-      method: "POST",
-      body: JSON.stringify(payload),
-    });
+    await dataSource.createLostFoundItem(payload);
     await refreshData();
   }
 
   async function updateLostFoundStatus(id, status) {
-    await apiRequest(`/api/lost-found/${id}`, {
-      method: "PATCH",
-      body: JSON.stringify({ status }),
-    });
+    await dataSource.updateLostFoundStatus(id, status);
     await refreshData();
   }
 
@@ -153,6 +121,7 @@ export function HostelHubProvider({ children }) {
         ...data,
         loading,
         error,
+        appMode,
         refreshData,
         selectedStudent,
         selectedStudentId,

@@ -13,7 +13,7 @@ const navItems = [
 ];
 
 export default function AppShell({ children }) {
-  const { students, selectedStudent, selectedStudentId, setSelectedStudentId } = useHostelHub();
+  const { appMode, students, selectedStudent, selectedStudentId, setSelectedStudentId } = useHostelHub();
 
   return (
     <div className="min-h-screen bg-[#09090b] text-white lg:flex">
@@ -30,7 +30,12 @@ export default function AppShell({ children }) {
 
         <div className="space-y-5 p-6">
           <div className="rounded-3xl border border-white/10 bg-white/5 p-4">
-            <p className="text-xs uppercase tracking-[0.25em] text-white/50">Active Student</p>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="text-xs uppercase tracking-[0.25em] text-white/50">Active Student</p>
+              <span className={`rounded-full px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] ${appMode === "demo" ? "bg-sky-500/15 text-sky-200" : "bg-emerald-500/15 text-emerald-200"}`}>
+                {appMode === "demo" ? "Demo Mode" : "Live DB"}
+              </span>
+            </div>
             <select
               className="mt-3 w-full rounded-2xl border border-white/10 bg-[#18181c] px-4 py-3 text-sm outline-none"
               value={selectedStudentId ?? ""}

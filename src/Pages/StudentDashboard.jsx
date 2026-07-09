@@ -3,14 +3,14 @@ import { useHostelHub } from "../context/HostelHubContext";
 import { PageHeader, Panel, StatCard, StatusPill } from "../Components/ui";
 
 export default function StudentDashboard() {
-  const { selectedStudent, selectedStudentComplaints, selectedStudentLeaves, notices, stats } = useHostelHub();
+  const { appMode, selectedStudent, selectedStudentComplaints, selectedStudentLeaves, notices, stats } = useHostelHub();
 
   return (
     <div>
       <PageHeader
         eyebrow="Overview"
         title={selectedStudent ? `${selectedStudent.full_name}'s dashboard` : "HostelHub dashboard"}
-        description="Track student records, pending hostel actions, and the latest notices from one place."
+        description={`Track student records, pending hostel actions, and the latest notices from one place.${appMode === "demo" ? " This GitHub Pages build stores changes in your browser only." : ""}`}
       />
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
