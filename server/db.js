@@ -1,9 +1,13 @@
+/* global process */
 import Database from "better-sqlite3";
 import fs from "node:fs";
 import path from "node:path";
 
-const dataDir = path.resolve("server", "data");
-const dbPath = path.join(dataDir, "hostelhub.db");
+const configuredDbPath = process.env.DB_PATH?.trim();
+const dbPath = configuredDbPath
+  ? path.resolve(configuredDbPath)
+  : path.resolve("server", "data", "hostelhub.db");
+const dataDir = path.dirname(dbPath);
 
 fs.mkdirSync(dataDir, { recursive: true });
 

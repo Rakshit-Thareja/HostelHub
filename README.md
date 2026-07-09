@@ -48,6 +48,10 @@ Expected Pages URL:
 
 `https://rakshit-thareja.github.io/HostelHub/`
 
+Live demo route:
+
+`https://rakshit-thareja.github.io/HostelHub/#/`
+
 ### 2. Full-stack hosted app
 
 The full-stack app uses:
@@ -62,10 +66,21 @@ Render settings:
 
 - Build command: `npm install && npm run build`
 - Start command: `npm run server`
+- Persistent disk: mounted at `/var/data`
+- Database path env var: `DB_PATH=/var/data/hostelhub.db`
 
-After connecting the GitHub repo in Render, the full app will run from a single web service.
+After connecting the GitHub repo in Render, the full app will run from a single web service and keep student records on the mounted disk between deploys.
+
+Recommended Render steps:
+
+1. Create a new `Web Service` from this GitHub repo.
+2. Let Render detect [render.yaml](C:\Users\RAKSHIT\Downloads\HostelHub\HostelHub\render.yaml).
+3. Confirm the service name and create it.
+4. Wait for the first deploy to finish.
+5. Open the generated Render URL.
 
 ## Notes
 
 - GitHub Pages is for demo use only.
 - The SQLite-backed version should be hosted on a Node-capable platform such as Render or Railway.
+- A hosted full-stack URL cannot be created from this machine alone because it requires access to your hosting account to create the actual service.
