@@ -14,6 +14,38 @@ const initialForm = {
   guardianPhone: "",
 };
 
+const exportFields = [
+  ["id", "ID"],
+  ["full_name", "Full Name"],
+  ["email", "Email"],
+  ["phone", "Phone"],
+  ["block", "Block"],
+  ["room_number", "Room Number"],
+  ["course", "Course"],
+  ["year_level", "Year Level"],
+  ["guardian_name", "Guardian Name"],
+  ["guardian_phone", "Guardian Phone"],
+  ["created_at", "Created At"],
+];
+
+function downloadFile(filename, content, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = url;
+  link.download = filename;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+function escapeCsvValue(value) {
+  const stringValue = String(value ?? "");
+  if (stringValue.includes(",") || stringValue.includes('"') || stringValue.includes("\n")) {
+    return `"${stringValue.replaceAll('"', '""')}"`;
+  }
+  return stringValue;
+}
+
 function StudentForm({ selectedStudent }) {
   const { createStudent, updateStudent, deleteStudent, setSelectedStudentId } = useHostelHub();
   const [form, setForm] = useState(
@@ -93,23 +125,41 @@ function StudentForm({ selectedStudent }) {
 }
 
 export default function StudentProfile() {
-  const { students, selectedStudent, setSelectedStudentId } = useHostelHub();
+  const { appMode, students, selectedStudent, setSelectedStudentId } = useHostelHub();
+
+  function exportAsJson() {
+    downloadFile("hostelhub-students.json", JSON.stringify(students, null, 2), "application/json");
+  }
+
+  function exportAsCsv() {
+    const header = exportFields.map(([, label]) => label).join(",");
+    const rows = students.map((student) => exportFields.map(([key]) => escapeCsvValue(student[key])).join(","));
+    downloadFile("hostelhub-students.csv", [header, ...rows].join("\n"), "text/csv;charset=utf-8");
+  }
 
   return (
     <div>
       <PageHeader
         eyebrow="Students"
         title="Student records"
-        description="Create, edit, and remove student profiles stored in the SQLite database."
+        description={`Create, edit, remove, and export student profiles.${appMode === "demo" ? " In demo mode, exports reflect the browser-stored data for this device." : " On the live hosted app, exports reflect the real database records."}`}
         children={
-          <SecondaryButton
-            type="button"
-            onClick={() => {
-              setSelectedStudentId(null);
-            }}
-          >
-            Add new student
-          </SecondaryButton>
+          <div className="flex flex-wrap gap-3">
+            <SecondaryButton type="button" onClick={exportAsJson}>
+              Export JSON
+            </SecondaryButton>
+            <SecondaryButton type="button" onClick={exportAsCsv}>
+              Export CSV
+            </SecondaryButton>
+            <SecondaryButton
+              type="button"
+              onClick={() => {
+                setSelectedStudentId(null);
+              }}
+            >
+              Add new student
+            </SecondaryButton>
+          </div>
         }
       />
 
@@ -136,7 +186,23 @@ export default function StudentProfile() {
           </div>
         </Panel>
 
-        <StudentForm key={selectedStudent?.id ?? "new"} selectedStudent={selectedStudent} />
+        <div className="space-y-6">
+          <StudentForm key={selectedStudent?.id ?? "new"} selectedStudent={selectedStudent} />
+          <Panel>
+            <h2 className="text-xl font-semibold text-white">Export records</h2>
+            <p className="mt-2 text-sm text-white/60">
+              Download the current student list from this running app. This is the right way to capture live data, since GitHub stores code, not the hosted database contents.
+            </p>
+            <div className="mt-5 flex flex-wrap gap-3">
+              <PrimaryButton type="button" onClick={exportAsJson}>
+                Download JSON
+              </PrimaryButton>
+              <SecondaryButton type="button" onClick={exportAsCsv}>
+                Download CSV
+              </SecondaryButton>
+            </div>
+          </Panel>
+        </div>
       </div>
     </div>
   );
